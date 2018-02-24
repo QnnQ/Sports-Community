@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=gbk" />
+<title>1</title>
+<script type="text/javascript" src="js/mootools.js"></script>
+<script type="text/javascript" src="js/calendar.rc4.js"></script>
+<script type="text/javascript">		
+	//<![CDATA[
+		window.addEvent('domready', function() { 
+			myCal2 = new Calendar({ date2: 'd/m/Y' }, { classes: ['dashboard'], direction: 1, tweak: {x: 3, y: -3} });
+		});
+	//]]>
+	</script>
+<link rel="stylesheet" type="text/css" href="css/calendar/iframe.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="css/calendar/calendar.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="css/calendar/dashboard.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="css/calendar/i-heart-ny.css" media="screen" />
+</head>
+<body>
+
+
+<form action="/" >
+  <fieldset>
+    <legend>Alternate styling: dashboard</legend>
+    <label for="date2">Date</label>
+    <input id="date2" name="date2" type="text" />
+  </fieldset>
+</form>
+
+</body>
+</html>
