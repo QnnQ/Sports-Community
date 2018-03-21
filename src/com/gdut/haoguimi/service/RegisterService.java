@@ -19,21 +19,14 @@ public class RegisterService {
 			try {
 				if(dao.doCheckUsername(loginbean))
 				{
-					if(loginbean.getPassword().isEmpty()||loginbean.getId().isEmpty())
-					{
-						returnTemplate.setResult(false);
-						returnTemplate.setErrmsg("账号密码不能为空");
-					}
-					else{
 					if(dao.doRegister(loginbean))
 					{
 						returnTemplate.setResult(true);
-						returnTemplate.setErrmsg("注册成功！");
+						returnTemplate.setErrmsg("注册成功！请登录");
 					}
 					else {
 						returnTemplate.setResult(false);
 						returnTemplate.setErrmsg("注册失败！");
-					}
 					}
 				}
 				else{

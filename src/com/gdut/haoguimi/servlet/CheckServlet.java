@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JSONObject;
@@ -44,9 +45,11 @@ public class CheckServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String k= (String) request.getSession().getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
+	    HttpSession session=request.getSession();
+	    String k= (String) session.getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
 		String action=request.getParameter("action");
 		response.setContentType("text/html; charset=utf-8");
+//登录验证
 		if(action.equals("check"))
 		{
 			try {
@@ -55,12 +58,16 @@ public class CheckServlet extends HttpServlet {
 				Loginbean loginbean=(Loginbean) JSONObject.toBean(jsonObject, Loginbean.class);
 				LoginService loginService=new LoginService();
 				ReturnTemplate returnTemplate=loginService.doLogin(loginbean,k);
+				if(returnTemplate.isResult()){
+				    session.setAttribute("user",loginbean.getId());
+				}
 				PrintWriter printWriter =response.getWriter();
 				printWriter.write((JSONObject.fromObject(returnTemplate)).toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+//注册新用户
 		else if(action.equals("register"))
 		{
 			try {
@@ -75,6 +82,10 @@ public class CheckServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		else if (action.equals("logOut")) {
+            session.removeAttribute("user");
+            session.invalidate();
+        }
 	}
 
 }

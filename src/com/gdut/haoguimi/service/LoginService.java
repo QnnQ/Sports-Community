@@ -32,12 +32,13 @@ public ReturnTemplate doLogin(Loginbean loginbean,String string)
 					returnTemplate.setResult(false);
 					returnTemplate.setErrmsg("该账号不存在！");
 				}
-		} catch (ClassNotFoundException e) {
+		    }
+	    catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
+    }
 	else {
 		returnTemplate.setErrmsg("验证码错误!");
 		returnTemplate.setResult(false);

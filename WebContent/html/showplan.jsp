@@ -21,6 +21,7 @@ overflow: hidden;
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery.min.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <!-- Custom Theme files -->
 <!--theme-style-->
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />	
@@ -35,8 +36,10 @@ overflow: hidden;
 			<div class="container">
 			<p class="header-para">HERE WE GO!AICHIXIA</p>
 				<ul class="sign">
-					<li ><a href="login.jsp" >登录/注册</a></li>
-					<li><a href="#" ><span > </span></a></li>			
+					<c:choose>
+					<c:when test="${empty sessionScope.user}"><li><a href="login.jsp" >登录/注册</a></li></c:when>
+					<c:otherwise><li><p>欢迎您:<%=session.getAttribute("user") %></p></li><li><a href="#" onclick="logOut()">退出</a></li></c:otherwise>
+					</c:choose>			
 				</ul>
 			</div>
 			<div class="clearfix"> </div>
@@ -56,7 +59,7 @@ overflow: hidden;
 					<span class="menu"> </span>
 					<ul>
 						<li  ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>						
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li class="active"><a href="plan.jsp" class="scroll">计划</a></li>
@@ -80,17 +83,27 @@ overflow: hidden;
 			<div class="content">
 				<div class="content-top">
 					<div class="container">
-						
+						<div class="content-app-up">
+							<div class="container">
+							<span class="line"> </span>
+							<h3>个人计划</h3>
+								<div class="regard" >
+									<div class="regard-in" id="plan">	
+										
+									</div>
+								</div>
+							</div>		
 						</div>
 					</div>
 				</div>
+			</div>
 		<div class="footer">
 		<div class="container">	
 			<div class="foter-bottom">			
 				<div class=" nav-top">				
 					<ul>
 						<li  ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>					
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li class="active"><a href="plan.jsp" class="scroll">计划</a></li>
@@ -100,6 +113,35 @@ overflow: hidden;
 			</div>
 		</div>
 			</div>		
-		
 </body>
+<script type="text/javascript">
+function logOut(){
+	$.ajax({
+		type : 'post',
+		url : "/sportcommunity/CheckServlet?action=logOut",
+		success : function() {
+			window.location.href='index.jsp';
+		},
+		async: false
+	});
+};
+$.ajax({
+	type: 'post',
+	contentType : "application/json; charset=utf-8",
+	url:"/sportcommunity/MyPlanServlet?action=all",
+	success:function(returnTemplate) {
+		if(returnTemplate.result){
+			for(var i=0;i<returnTemplate.list.length;i++){
+				var str="<a href=\"plandetail.jsp?plan_id="+returnTemplate.list[i].plan_id+"\">"+returnTemplate.list[i].plan_title+"</div><br>";
+				$("#plan").append(str);
+			}
+		}	
+		else{
+			alert(returnTemplate.errmsg);
+		}
+	},
+	dataType : 'json',
+	async: false
+});
+</script>
 </html>

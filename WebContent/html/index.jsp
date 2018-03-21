@@ -8,6 +8,7 @@
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery.min.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <!-- Custom Theme files -->
 <!--theme-style-->
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />	
@@ -35,8 +36,10 @@
 			<p class="header-para">HERE WE GO!AICHIXIA</p>
 			
 				<ul class="sign">
-					<li ><a href="login.jsp" >登录/注册</a></li>
-					<li><a href="#" ><span > </span></a></li>			
+					<c:choose>
+					<c:when test="${empty sessionScope.user}"><li><a href="login.jsp" >登录/注册</a></li></c:when>
+					<c:otherwise><li><p>欢迎您:<%=session.getAttribute("user") %></p></li><li><a href="#" onclick="logOut()">退出</a></li></c:otherwise>
+					</c:choose>			
 				</ul>
 			</div>
 			<div class="clearfix"> </div>
@@ -56,7 +59,7 @@
 					<span class="menu"> </span>
 					<ul>
 						<li class="active" ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li><a href="plan.jsp" class="scroll">计划</a></li>
@@ -158,7 +161,7 @@
 				<div class=" nav-top">				
 					<ul>
 						<li class="active" ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>					
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li><a href="plan.jsp" class="scroll">计划</a></li>
@@ -169,4 +172,16 @@
 		</div>
 			</div>
 </body>
+<script type="text/javascript">
+function logOut(){
+	$.ajax({
+		type : 'post',
+		url : "/sportcommunity/CheckServlet?action=logOut",
+		success : function() {
+			window.location.href='index.jsp';
+		},
+		async: false
+	});
+};
+</script>
 </html>

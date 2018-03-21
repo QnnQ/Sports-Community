@@ -22,7 +22,11 @@ overflow: hidden;
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <script src="js/build/jquery.datetimepicker.full.js"></script>
+<link rel="stylesheet" href="kindeditor/themes/default/default.css" />
+<script charset="utf-8" src="kindeditor/kindeditor-all-min.js"></script>
+<script charset="utf-8" src="kindeditor/lang/zh-CN.js"></script>
 <!-- Custom Theme files -->
 <!--theme-style-->
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />	
@@ -38,8 +42,10 @@ overflow: hidden;
 			<div class="container">
 			<p class="header-para">HERE WE GO!AICHIXIA</p>
 				<ul class="sign">
-					<li ><a href="login.jsp" >登录/注册</a></li>
-					<li><a href="#" ><span > </span></a></li>			
+					<c:choose>
+					<c:when test="${empty sessionScope.user}"><li><a href="login.jsp" >登录/注册</a></li></c:when>
+					<c:otherwise><li><p>欢迎您:<%=session.getAttribute("user") %></p></li><li><a href="#" onclick="logOut()">退出</a></li></c:otherwise>
+					</c:choose>			
 				</ul>
 			</div>
 			<div class="clearfix"> </div>
@@ -58,8 +64,8 @@ overflow: hidden;
 				<div class="top-nav">
 					<span class="menu"> </span>
 					<ul>
-						<li  ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="index.jsp" class="scroll">首页</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>						
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li class="active"><a href="plan.jsp" class="scroll">计划</a></li>
@@ -70,16 +76,13 @@ overflow: hidden;
 						$(".top-nav ul").slideToggle(500, function(){
 						});
 					});
-			</script>
+				</script>
 				</div>
 				<div class="clearfix"> </div>
 			</div>
 		</div>
-		</div>
 	</div>
-		<!--banner-->
-		
-		<!--content-->
+</div>
 			<div class="content">
 				<div class="content-gear">
 					<div class="container">
@@ -89,7 +92,17 @@ overflow: hidden;
 						</div>
 					</div>
 				</div>
-				
-		
 </body>
+<script type="text/javascript">
+function logOut(){
+	$.ajax({
+		type : 'post',
+		url : "/sportcommunity/CheckServlet?action=logOut",
+		success : function() {
+			window.location.href='index.jsp';
+		},
+		async: false
+	});
+};
+</script>
 </html>

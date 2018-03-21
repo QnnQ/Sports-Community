@@ -27,7 +27,11 @@ overflow-y:visible
 <link rel="stylesheet" type="text/css" href="css/jquery.datetimepicker.css"/>
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <script src="js/build/jquery.datetimepicker.full.js"></script>
+<link rel="stylesheet" href="kindeditor/themes/default/default.css" />
+<script charset="utf-8" src="kindeditor/kindeditor-all-min.js"></script>
+<script charset="utf-8" src="kindeditor/lang/zh-CN.js"></script>
 <!-- Custom Theme files -->
 <!--theme-style-->
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />	
@@ -42,8 +46,10 @@ overflow-y:visible
 			<div class="container">
 			<p class="header-para">HERE WE GO!AICHIXIA</p>
 				<ul class="sign">
-					<li ><a href="login.jsp" >登录/注册</a></li>
-					<li><a href="#" ><span > </span></a></li>			
+					<c:choose>
+					<c:when test="${empty sessionScope.user}"><li><a href="login.jsp" >登录/注册</a></li></c:when>
+					<c:otherwise><li><p>欢迎您:<%=session.getAttribute("user") %></p></li><li><a href="#" onclick="logOut()">退出</a></li></c:otherwise>
+					</c:choose>			
 				</ul>
 			</div>
 			<div class="clearfix"> </div>
@@ -63,7 +69,7 @@ overflow-y:visible
 					<span class="menu"> </span>
 					<ul>
 						<li  ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>						
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li class="active"><a href="plan.jsp" class="scroll">计划</a></li>
@@ -74,48 +80,49 @@ overflow-y:visible
 				<div class="clearfix"> </div>
 			</div>
 		</div>
-		</div>
 	</div>
+</div>
 <div class="content">
 				<div class="content-gear">
 				<div class="container">
 						<h3>PLAN</h3>
 				</div>		
 				</div>
-			<div class="container" style="width:700px">
-						<form action="/" >
+			<div class="container" style="width:700px;margin-bottom:60px;">
+						<form action="../PlanServlet" method="post" >
 						<fieldset>
 						<legend> Sport</legend>
-						<p><input type="radio" name="selectsport" value="running" checked="checked">跑步</p>
-						<p><input type="radio" name="selectsport" value="gym" >健身</p>
-						<p><input type="radio" name="selectsport" value="ballgame" >球类运动</p>
-						<p><input type="radio" name="selectsport" value="riding" >骑行</p>
-						<p><input type="radio" name="selectsport" value="outdoor" >户外</p>
+						<p><input type="radio" name="selectedsport" value="running" checked="checked">跑步</p>
+						<p><input type="radio" name="selectedsport" value="gym" >健身</p>
+						<p><input type="radio" name="selectedsport" value="ballgame" >球类运动</p>
+						<p><input type="radio" name="selectedsport" value="riding" >骑行</p>
+						<p><input type="radio" name="selectedsport" value="outdoor" >户外</p>
 						</fieldset>
-						</form>
-						<form action="/" >
 						<fieldset>
 						<legend> Date</legend>
 						<label > 时间  </label>
-						<input type="text" class="some_class" placeholder="from" id="some_class_1"/> 
-						<span>~&nbsp;&nbsp;</span><input type="text" class="some_class" placeholder="to" id="some_class_2"/>
+						<input type="text" class="some_class" placeholder="from" id="some_class_1" name="from_time"> 
+						<span>~&nbsp;&nbsp;</span><input type="text" class="some_class" placeholder="to" id="some_class_2" name="to_time">
 						</fieldset>
-						</form>
-						<form action="/" >
+						<fieldset>
+						<legend> Title</legend>
+						<label > 标题  </label>
+						<input type="text" name="title">
+						</fieldset>
 						<fieldset>
 						<legend> Event</legend>
-						<textarea class="t_area" placeholder="details" id="events"></textarea>&nbsp;&nbsp;&nbsp;<a onclick="add()">Add</a>
+						<textarea id="editor_id" name="content" >
+				
+						</textarea>
+						<script>
+			        		KindEditor.ready(function(K) {
+			                window.editor = K.create('#editor_id',{allowImageUpload:false});
+			        		});
+						</script>		
 						</fieldset>
+						<br>
+						<input type="submit" class="button" value="提交">
 						</form>
-						<form action="/" >
-						<fieldset>
-						<legend> Plan</legend>
-						<div id="plandetails"></div>
-						</fieldset>
-						</form>
-						<div style="margin:50px 0;text-align:right;">
-							<button class="button" id="submit" >提交</button>
-						</div>
 			</div>
 	</div>		
 <div class="footer">
@@ -124,7 +131,7 @@ overflow-y:visible
 				<div class=" nav-top">				
 					<ul>
 						<li  ><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>					
 						<li ><a href="share.jsp" class="scroll">圈子</a></li>
 						<li class="active"><a href="plan.jsp" class="scroll">计划</a></li>
@@ -143,22 +150,15 @@ window.onerror = function(errorMsg) {
 $('.some_class').datetimepicker();
 </script>
 <script type="text/javascript">
-function add(){
-	var newString = document.getElementById("events").value.replace(/\n/g, '_@').replace(/\r/g, '_#');
-	newString = newString.replace(/_@/g, '<br/>');
-	newString = newString.replace(/\s/g, '&nbsp;');
-	if(newString.length == 0)
-		{
-		alert(" 输入值不能为空! ");
-		}
-	else{
-		var newevent="<p>"+newString+"<a onclick='del(this)' style=\"float:right\">删除</a></p>";
-		$("#plandetails").append(newevent);
-		document.getElementById("events").value="";
-	}
-};
-function del(that){
-	$(that).parent().remove();
+function logOut(){
+	$.ajax({
+		type : 'post',
+		url : "/sportcommunity/CheckServlet?action=logOut",
+		success : function() {
+			window.location.href='index.jsp';
+		},
+		async: false
+	});
 };
 </script>
 </html>

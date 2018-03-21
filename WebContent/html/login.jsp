@@ -6,6 +6,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title> 用户界面</title>
 <script type="text/javascript" src="../jqlib/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/md5.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <!-- Custom Theme files -->
@@ -54,8 +56,10 @@ background: linear-gradient(top,#42a4e0,#2e88c0);
 			<div class="container">
 			<p class="header-para">HERE WE GO!AICHIXIA</p>
 				<ul class="sign">
-					<li ><a href="login.jsp" >登录/注册</a></li>
-					<li><a href="#" ><span > </span></a></li>			
+					<c:choose>
+					<c:when test="${empty sessionScope.user}"><li><a href="login.jsp" >登录/注册</a></li></c:when>
+					<c:otherwise><li><p>欢迎您:<%=session.getAttribute("user") %></p></li><li><a href="#" onclick="logOut()">退出</a></li></c:otherwise>
+					</c:choose>
 				</ul>
 			</div>
 			<div class="clearfix"> </div>
@@ -75,7 +79,7 @@ background: linear-gradient(top,#42a4e0,#2e88c0);
 					<span class="menu"> </span>
 					<ul>
 						<li><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>						
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li><a href="plan.jsp" class="scroll">计划</a></li>
@@ -122,7 +126,7 @@ background: linear-gradient(top,#42a4e0,#2e88c0);
 				<div class=" nav-top">				
 					<ul>
 						<li><a href="index.jsp" class="scroll">首页</a></li>
-						<li><a href="topic.jsp" class="scroll">话题</a></li>
+						<li><a href="topic.jsp" class="scroll">新闻</a></li>
 						<li><a href="community.jsp" class="scroll">干货</a></li>					
 						<li><a href="share.jsp" class="scroll">圈子</a></li>
 						<li><a href="plan.jsp" class="scroll">计划</a></li>
@@ -137,14 +141,26 @@ background: linear-gradient(top,#42a4e0,#2e88c0);
 document.getElementById("password").value="";
 document.getElementById("username").value="";
 document.getElementById("checkcode").value="";
+function logOut(){
+	$.ajax({
+		type : 'post',
+		url : "/sportcommunity/CheckServlet?action=logOut",
+		success : function() {
+			window.location.href='index.jsp';
+		},
+		async: false
+	});
+};
 function reload(){
 	var time=new Date().getTime();
 	document.getElementById("imagecode").src="/sportcommunity/kaptcha.jpg?d="+time;
 };
 $("#login").click(function(){
 	var checkcode=$("#checkcode").val();
-	var id=$("#username").val();
-	var password=$("#password").val();
+	var id=$("#username").val().trim();
+	var password=$("#password").val().trim();
+	if(null != id && id.length > 0 && null != password && password.length > 0 ){
+	password=hex_md5(password);
 	var json={
 		"checkcode":checkcode,
 		"id":id,
@@ -157,12 +173,7 @@ $("#login").click(function(){
 		data : JSON.stringify(json),							
 		success : function(returnTemplate) {
 			if(returnTemplate.result){
-				alert(returnTemplate.errmsg);
-				document.getElementById("checkcode").value="";
-				document.getElementById("username").value="";
-				document.getElementById("password").value="";
-				var time=new Date().getTime();
-				document.getElementById("imagecode").src="/sportcommunity/kaptcha.jpg?d="+time;
+				window.location.href='index.jsp';
 			}else{
 				alert(returnTemplate.errmsg);
 				document.getElementById("checkcode").value="";
@@ -174,11 +185,21 @@ $("#login").click(function(){
 		dataType : 'json',
 		async: false
 	});
+	}
+	else{
+		alert("账号/密码不能为空");
+		document.getElementById("checkcode").value="";
+		document.getElementById("password").value="";
+		var time=new Date().getTime();
+		document.getElementById("imagecode").src="/sportcommunity/kaptcha.jpg?d="+time;
+	}
 	});
 $("#register").click(function(){
 	var checkcode=$("#checkcode").val();
-	var id=$("#username").val();
-	var password=$("#password").val();
+	var id=$("#username").val().trim();
+	var password=$("#password").val().trim();
+	if(null != id && id.length > 0 && null != password && password.length > 0 ){
+	password=hex_md5(password);
 	var json={
 		"checkcode":checkcode,
 		"id":id,
@@ -208,6 +229,14 @@ $("#register").click(function(){
 		dataType : 'json',
 		async: false
 	});
+}
+	else{
+		alert("账号/密码不能为空");
+		document.getElementById("checkcode").value="";
+		document.getElementById("password").value="";
+		var time=new Date().getTime();
+		document.getElementById("imagecode").src="/sportcommunity/kaptcha.jpg?d="+time;
+		}
 	});
 </script>
 </html>
